@@ -4,9 +4,11 @@ $header-bg: #3e7aab;
 .layout {
   height: 100%;
   display: flex;
+
   &-vertical {
     flex-direction: column;
   }
+
   &-header {
     height: $header-height;
     background-color: $header-bg;
@@ -16,13 +18,16 @@ $header-bg: #3e7aab;
     align-items: center;
     justify-content: space-between;
     padding: 0 32px;
+
     #logo {
       font-size: 28px;
       font-weight: 600;
       color: #fff;
     }
+
     .extra {
       color: #eaeaea;
+
       .user-info {
         display: flex;
         flex-direction: row;
@@ -31,16 +36,19 @@ $header-bg: #3e7aab;
       }
     }
   }
+
   &-content {
     flex: 1;
     overflow: hidden;
     display: flex;
+
     &-container {
       flex: 1;
       overflow: scroll;
       background-color: #eaeef4;
     }
   }
+
   &-slider {
     width: 300px;
   }

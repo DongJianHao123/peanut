@@ -3,18 +3,29 @@
   justify-content: center;
   align-items: center;
 }
+
 @mixin truncate {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .posts {
-  & > header {
+  height: 100%;
+  position: relative;
+  overflow-y: scroll;
+
+  &>header {
     background-color: #aaa;
     padding: 4px 6px;
     display: flex;
     gap: 10px;
+    height: auto;
+    position: sticky;
+    top: 0;
+    z-index: 99;
   }
+
   .actions {
     background: rgba(127, 127, 127, 0.05);
     height: 28px;
@@ -23,22 +34,65 @@
     padding: 10px;
     color: #376d98;
   }
+
+  .loading {
+    background-color: #fff;
+    opacity: unset;
+
+    .ant-spin-blur::after {
+      opacity: unset;
+    }
+
+    .ant-spin-container::after {
+      opacity: unset;
+    }
+  }
+
+  .sider-content {
+    height: 100%;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    background-color: #eee;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+    border-radius: 5px;
+
+    &:hover {
+      background-color: #a8a8a8;
+    }
+
+    &:active {
+      background-color: #787878;
+    }
+  }
+
+  & {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #eee;
+  }
 }
 
 .post-collapse {
   .ant-collapse-header {
     padding: 2px 6px !important;
     background-color: #e8e8ea;
+
     .ant-collapse-header-text {
       font-weight: 600;
     }
   }
+
   .ant-collapse-content {
     .ant-collapse-content-box {
       padding: 0 !important;
     }
   }
 }
+
 .post-item {
   display: flex;
   flex-direction: row;
@@ -53,9 +107,11 @@
   &-active {
     background-color: #f2f6f0b0;
   }
+
   &-unread {
     background: rgba(243, 120, 103, 0.2);
   }
+
   &-unanswered {
     background: #fff7ce;
   }
@@ -65,18 +121,21 @@
     height: 100%;
     @include center;
   }
-  & > main {
+
+  &>main {
     height: 100%;
     width: calc(100% - 30px - 40px);
     display: flex;
     flex-direction: column;
     padding-top: 6px;
+
     .post-item-title {
       display: flex;
       flex-direction: row;
       align-items: center;
       width: 100%;
       gap: 10px;
+
       .title-text {
         width: 82%;
         @include truncate;
@@ -88,17 +147,20 @@
         }
       }
     }
+
     .summary {
       color: #666;
       margin-bottom: 0;
     }
   }
+
   &-actions {
     height: 100%;
     width: 40px;
     // transform: translate(7px, 5px);
     @include center;
   }
+
   .createtime {
     position: absolute;
     top: 10px;
@@ -117,6 +179,7 @@
 
 .posts-empty {
   margin-top: 30px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;

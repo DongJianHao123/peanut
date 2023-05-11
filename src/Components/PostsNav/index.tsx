@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
 import { keys, isEmpty, debounce, filter } from 'lodash'
 import clns from 'classnames'
-import { Collapse, Button, Input, Typography, Empty } from 'antd'
+import { Collapse, Button, Input, Typography, Empty, Spin } from 'antd'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import HighlightText from '@/Components/HighlightText'
 import Icon from '@/Components/Icon'
@@ -10,6 +10,7 @@ import { useStore, useDispatch } from '@/store'
 import { IPost } from '@/models/post'
 
 import './index.scss'
+import Loading from '../Loading'
 
 const Panel = Collapse.Panel
 const { Paragraph } = Typography
@@ -43,7 +44,7 @@ const Post = (props: IPostProps) => {
           </div>
         </div>
         <Paragraph className="summary" ellipsis={{ rows: 2 }}>
-          <HighlightText text={data.content.replace( /(<([^>]+)>| )/ig, '')} highlight={props.keyword} />
+          <HighlightText text={data.content.replace(/(<([^>]+)>| )/ig, '')} highlight={props.keyword} />
         </Paragraph>
       </main>
       <div className="post-item-actions">
@@ -70,6 +71,7 @@ const PostsNav = () => {
   const dispatch = useDispatch()
   const [activeKeys, setActiveKeys] = useState<string | string[]>([])
   const [keyword, setKeyword] = useState('')
+  const [loading, setLoding] = useState(true)
 
   const {
     tag: { selectedQueryTags },
@@ -80,10 +82,12 @@ const PostsNav = () => {
     if (!params.classId) {
       return
     }
+    setLoding(true)
     const res = await dispatch.post.getPostsByWeekly({ course_id: params.classId })
     if (isEmpty(activeKeys)) {
       setActiveKeys(keys(res)?.slice(0, 1))
     }
+    setLoding(false)
   }, [params.classId, selectedQueryTags])
 
   useEffect(() => {
@@ -159,39 +163,42 @@ const PostsNav = () => {
       </header>
       <div className="tags"></div>
 
-      {/* <div className="actions"> show Actions</div> */}
-      {isEmpty(data) ? (
-        <div className="posts-empty">
-          <Empty description="暂无数据" />
-          <Button style={{ marginTop: 20, width: 120 }} type="primary">
-            去提问
-          </Button>
-        </div>
-      ) : (
-        <Collapse
-          expandIcon={({ isActive }) => (
-            <Icon symbol={isActive ? 'icon-arrow-down-filling' : 'icon-arrow-right-filling'} />
-          )}
-          bordered={false}
-          className="post-collapse"
-          activeKey={activeKeys}
-          onChange={onCollapseChange}
-        >
-          {data.map((dis) => (
-            <Panel header={dis.title} key={dis.id}>
-              {dis.children.map((post) => (
-                <Post
-                  key={post.id}
-                  data={post}
-                  keyword={keyword}
-                  unread={!postViewStatus[post.id]}
-                  onClick={handlePostClick}
-                />
-              ))}
-            </Panel>
-          ))}
-        </Collapse>
-      )}
+      {loading && <Loading top={"50%"} />}
+
+      <div className='sider-content'>
+        {!loading && isEmpty(data) ? (
+          <div className="posts-empty">
+            <Empty description="暂无数据" />
+            <Button style={{ marginTop: 20, width: 120 }} type="primary">
+              去提问
+            </Button>
+          </div>
+        ) : (
+          <Collapse
+            expandIcon={({ isActive }) => (
+              <Icon symbol={isActive ? 'icon-arrow-down-filling' : 'icon-arrow-right-filling'} />
+            )}
+            bordered={false}
+            className="post-collapse"
+            activeKey={activeKeys}
+            onChange={onCollapseChange}
+          >
+            {data.map((dis) => (
+              <Panel header={dis.title} key={dis.id}>
+                {dis.children.map((post) => (
+                  <Post
+                    key={post.id}
+                    data={post}
+                    keyword={keyword}
+                    unread={!postViewStatus[post.id]}
+                    onClick={handlePostClick}
+                  />
+                ))}
+              </Panel>
+            ))}
+          </Collapse>
+        )}
+      </div>
     </div>
   )
 }
